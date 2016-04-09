@@ -321,14 +321,23 @@ public class Utils : MonoBehaviour {
 		float res = Lerp( Bezier(u, vListL), Bezier(u, vListR), u );
 		return( res );
 	}
-	
+
 	// This version allows an Array or a series of floats as input
 	static public float Bezier( float u, params float[] vecs ) {
 		return( Bezier( u, new List<float>(vecs) ) );
 	}
 
+	static public Quaternion Bezier(float u, List<Quaternion> vList){
+		if (vList.Count == 1) return (vList [0]);
+		List<Quaternion> vListR = vList.GetRange (1, vList.Count - 1);
+		List<Quaternion> vListL = vList.GetRange (0, vList.Count - 1);
+		Quaternion res = Quaternion.Slerp (Bezier (u, vListL), Bezier (u, vListR), u);
+		return (res);
+	}//end of Bezier(float u, List<Quaternion> vList)
 
-	
+	static public Quaternion Bezier(float u, params Quaternion[] vecs){
+		return(Bezier (u, new List<Quaternion> (vecs)));
+	}//end of (float u, params Quaternion[] vecs)
 	//============================ Trace & Logging Functions ============================
 
 	static public void tr(params object[] objs) {
