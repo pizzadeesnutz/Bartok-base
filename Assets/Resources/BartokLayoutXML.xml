@@ -3,7 +3,7 @@
 	
 	<!-- The multiplier is multiplied by the x and y attributes below. -->
 	<!-- This determines how loose or tight the layout is. --> 
-	<multiplier x="1" y="1" />
+	<multiplier x="1" y="1"/>
 	
 	<!-- In the XML below, id is the number of the card -->
 	<!-- x and y set position -->
