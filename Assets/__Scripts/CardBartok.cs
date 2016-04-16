@@ -33,6 +33,12 @@ public class CardBartok : Card {
 
 	//used to report when the card is done moving
 	public GameObject reportFinishTo = null;
+	public Player callbackPlayer = null;
+
+	//just to be 100% certain it is null
+	public void Awake(){
+		callbackPlayer = null;
+	}//end of Awake()
 
 	public void MoveTo(Vector3 ePos, Quaternion eRot){
 		bezierPts = new List<Vector3> ();
@@ -72,12 +78,9 @@ public class CardBartok : Card {
 
 			else if (u > 1) {
 				uC = 1;
-				if (state == CBState.toHand)
-					state = CBState.hand;
-				if (state == CBState.toTarget)
-					state = CBState.target;
-				if (state == CBState.to)
-					state = CBState.idle;
+				if (state == CBState.toHand) state = CBState.hand;
+				if (state == CBState.toTarget) state = CBState.target;
+				if (state == CBState.to) state = CBState.idle;
 				transform.localPosition = bezierPts [bezierPts.Count - 1];
 				transform.rotation = bezierRots [bezierPts.Count - 1];
 				timeStart = 0;
@@ -86,6 +89,11 @@ public class CardBartok : Card {
 					reportFinishTo.SendMessage ("CBCallback", this);
 					reportFinishTo = null;
 				}//end of if
+
+				else if (callbackPlayer != null) {
+					callbackPlayer.CBCallback (this);
+					callbackPlayer = null;
+				}//end of else if
 
 				else {
 
@@ -103,4 +111,9 @@ public class CardBartok : Card {
 			break;
 		}//end of switch(state)
 	}//end of Update()
+
+	override public void OnMouseUpAsButton(){
+		Bartok.S.CardClicked (this);
+		base.OnMouseUpAsButton ();
+	}//end of OnMouseUpAsButton()
 }//end of class

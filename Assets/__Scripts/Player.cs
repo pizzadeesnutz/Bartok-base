@@ -60,6 +60,9 @@ public class Player{
 			pos += handSlotDef.pos;
 
 			pos.z = -0.5f * i;
+
+			if (Bartok.S.phase != TurnPhase.idle) hand [i].timeStart = 0;
+
 			hand [i].MoveTo (pos, rotQ);
 			hand [i].state = CBState.toHand;
 
@@ -73,4 +76,38 @@ public class Player{
 			hand[i].eventualSortOrder = i * 4;
 		}//end of for loop
 	}//end of FanHand()
+
+	public void TakeTurn(){
+		Utils.tr (Utils.RoundToPlaces (Time.time), "Player.TakeTurn()");
+
+		//the player can take his or her own action so end function
+		if(type == PlayerType.human) return;
+		Bartok.S.phase = TurnPhase.waiting;
+
+		CardBartok cb;
+
+		//find and store valid cards for AI
+		List<CardBartok> validCards = new List<CardBartok>();
+		foreach (CardBartok tCB in hand) {
+			if (Bartok.S.ValidPlay (tCB)) validCards.Add (tCB);
+		}//end of foreach
+
+		//if no valid cards were found
+		if (validCards.Count == 0) {
+			cb = AddCard (Bartok.S.Draw ());
+			cb.callbackPlayer = this;
+			return;
+		}//end of if
+
+		//if one was found pick one at random
+		cb = validCards[Random.Range(0,validCards.Count)];
+		RemoveCard (cb);
+		Bartok.S.MoveToTarget (cb);
+		cb.callbackPlayer = this;
+	}//end of TakeTurn()
+
+	public void CBCallback(CardBartok tCB){
+		Utils.tr (Utils.RoundToPlaces (Time.time), "Player.CBCallback()", tCB.name, "Player " + playerNum);
+		Bartok.S.PassTurn ();
+	}//end of CBCallback(CardBartok tCB)
 }//end of class
